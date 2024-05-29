@@ -1,0 +1,134 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 200px;
+    background-color: #003366;
+    color: white;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul li {
+    padding: 15px;
+    text-align: left;
+}
+
+.sidebar ul li.active {
+    background-color: #ffcc00;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+.sidebar ul li.active a {
+    color: black;
+}
+
+.content {
+    flex-grow: 1;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #e0e0e0;
+}
+
+.date-picker input[type="date"] {
+    padding: 5px;
+    font-size: 16px;
+}
+
+.view-buttons .btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.view-buttons .btn:hover {
+    background-color: #45a049;
+}
+
+.view-buttons label {
+    font-size: 16px;
+}
+
+.main-content {
+    padding: 20px;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.schedule {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.class {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.class .time-block {
+    width: 150px;
+    text-align: center;
+    background-color: #d0d0d0;
+    border-radius: 5px;
+    padding: 10px;
+    margin-right: 20px;
+}
+
+.class .time {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.class .time-range {
+    font-size: 14px;
+}
+
+.class .details {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.class .details span {
+    display: block;
+}
+
+.class .details .code {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.class .details .teacher {
+    color: gray;
+    font-size: 14px;
+}
