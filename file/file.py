@@ -76,7 +76,7 @@ class FileManagerApp:
         self.date_filter_entry.grid(row=6, column=0, sticky='ew', padx=5, pady=5)
 
         # Groottefilter label
-        self.size_filter_label = ttk.Label(self.scrollable_frame, text="Size Filter (e.g., >1MB, <500KB):")
+        self.size_filter_label = ttk.Label(self.scrollable_frame, text="Size Filter (KB, MB, GB):")
         self.size_filter_label.grid(row=7, column=0, sticky='ew', padx=5, pady=5)
 
         # Groottefilter
@@ -85,14 +85,24 @@ class FileManagerApp:
         self.size_filter_entry = ttk.Entry(self.scrollable_frame, textvariable=self.size_filter_var)
         self.size_filter_entry.grid(row=8, column=0, sticky='ew', padx=5, pady=5)
 
+        # Specifieke grootte filter label
+        self.specific_size_filter_label = ttk.Label(self.scrollable_frame, text="Specific Size Filter (e.g., 300KB):")
+        self.specific_size_filter_label.grid(row=9, column=0, sticky='ew', padx=5, pady=5)
+
+        # Specifieke grootte filter
+        self.specific_size_filter_var = tk.StringVar()
+        self.specific_size_filter_var.trace_add('write', self.update_file_list)
+        self.specific_size_filter_entry = ttk.Entry(self.scrollable_frame, textvariable=self.specific_size_filter_var)
+        self.specific_size_filter_entry.grid(row=10, column=0, sticky='ew', padx=5, pady=5)
+
         # Frame voor Treeview en scrollbars
         self.tree_frame = ttk.Frame(self.scrollable_frame)
-        self.tree_frame.grid(row=9, column=0, pady=20, sticky='nsew')
+        self.tree_frame.grid(row=11, column=0, pady=20, sticky='nsew')
 
-        self.scrollable_frame.rowconfigure(9, weight=1)
+        self.scrollable_frame.rowconfigure(11, weight=1)
         
         self.tree_scroll_y = ttk.Scrollbar(self.tree_frame, orient=tk.VERTICAL)
-        self.tree_scroll_x = ttk.Scrollbar(self.tree_frame, orient=tk.HORIZONTAL)
+        self.tree_scroll_x = ttk.Scrollbar(self.scrollable_frame, orient=tk.HORIZONTAL)
         
         self.tree = ttk.Treeview(self.tree_frame, columns=("name", "path", "size", "date"), show="headings",
                                  yscrollcommand=self.tree_scroll_y.set, xscrollcommand=self.tree_scroll_x.set)
@@ -110,11 +120,11 @@ class FileManagerApp:
 
         self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.tree_scroll_y.pack(side=tk.RIGHT, fill=tk.Y)
-        self.tree_scroll_x.pack(side=tk.BOTTOM, fill=tk.X)
+        self.tree_scroll_x.grid(row=12, column=0, sticky='ew')
 
         # Knoppen
         self.button_frame = ttk.Frame(self.scrollable_frame)
-        self.button_frame.grid(row=10, column=0, pady=5, sticky='ew')
+        self.button_frame.grid(row=13, column=0, pady=5, sticky='ew')
 
         self.delete_button = ttk.Button(self.button_frame, text="Delete Selected", command=self.delete_selected)
         self.delete_button.grid(row=0, column=0, padx=5, pady=5, sticky='ew')
@@ -129,17 +139,18 @@ class FileManagerApp:
 
         # Extensie filter
         self.filter_label = ttk.Label(self.scrollable_frame, text="Filter by extension:")
-        self.filter_label.grid(row=11, column=0, sticky='ew', padx=5, pady=5)
+        self.filter_label.grid(row=14, column=0, sticky='ew', padx=5, pady=5)
         self.filter_var = tk.StringVar()
         self.filter_var.trace_add('write', self.update_file_list)
         self.filter_entry = ttk.Entry(self.scrollable_frame, textvariable=self.filter_var)
-        self.filter_entry.grid(row=12, column=0, sticky='ew', padx=5, pady=5)
+        self.filter_entry.grid(row=15, column=0, sticky='ew', padx=5, pady=5)
 
     def update_file_list(self, *args):
         search_term = self.search_var.get().lower()
         file_extension = self.filter_var.get().lower()
         date_filter = self.date_filter_var.get()
-        size_filter = self.size_filter_var.get()
+        size_filter = self.size_filter_var.get().upper()
+        specific_size_filter = self.specific_size_filter_var.get().upper()
         directory = self.path_var.get()
 
         self.tree.delete(*self.tree.get_children())
@@ -170,8 +181,13 @@ class FileManagerApp:
                         if file_date.strftime('%Y-%m-%d') != date_filter:
                             continue
 
-                    if size_filter:
-                        if not self.size_filter_match(file_size, size_filter):
+                    if size_filter and not file_size_str.endswith(size_filter):
+                        continue
+
+                    if specific_size_filter:
+                        specific_size_bytes = self.parse_size(specific_size_filter)
+                        specific_size_str = self.convert_size(specific_size_bytes).split()[0]
+                        if not file_size_str.startswith(specific_size_str):
                             continue
 
                     self.tree.insert("", tk.END, values=(file, file_path, file_size_str, file_date_str))
